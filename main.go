@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -47,5 +48,5 @@ func Query(query string) string {
 }
 
 func main() {
-
+	fmt.Println(Query("Hello World!"))
 }
