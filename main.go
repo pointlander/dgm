@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 // Prompt is a llm prompt
@@ -48,5 +49,50 @@ func Query(query string) string {
 }
 
 func main() {
-	fmt.Println(Query("Hello World!"))
+	//fmt.Println(Query("Hello World!"))
+	const (
+		begin = "```javascript"
+		end   = "```"
+	)
+	result, i := Query(`Improve the following integer factoring code, place all code in a single code block: 
+	`+begin+`
+	while (var i := 1; i < 15; i++) {
+		if (15%i) {
+			llama.answer(i);
+			break
+		}
+	}`+end+`
+`), 0
+	for {
+		previous := ""
+		js := ""
+		for {
+			goja := NewGOJA()
+			index := strings.Index(result, begin)
+			if index == -1 {
+				fmt.Print(result)
+				break
+			}
+			fmt.Print(result[:index+len(begin)])
+			result = result[index+len(begin):]
+			index = strings.Index(result, end)
+			fmt.Println(result[:index+len(end)])
+			fmt.Println("```goja")
+			js = result[:index]
+			err := goja.Run(i, js)
+			if err != nil {
+				fmt.Print("<<<")
+				fmt.Println(err)
+				js = previous
+				break
+			}
+			i++
+			fmt.Println("```")
+			result = result[index+len(end):]
+			fmt.Println(goja.Answer)
+		}
+		previous = js
+		result, i = Query(`Improve the following integer factoring code, place all code in a single code block: 
+			`+begin+"\n"+js+"\n"), 0
+	}
 }
