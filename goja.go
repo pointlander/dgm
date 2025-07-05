@@ -10,6 +10,7 @@ import (
 type GOJA struct {
 	vm     *goja.Runtime
 	Answer goja.Value
+	Cost   goja.Value
 }
 
 func NewGOJA() *GOJA {
@@ -34,9 +35,11 @@ func NewGOJA() *GOJA {
 	generate := func(call goja.FunctionCall) goja.Value {
 		return vm.ToValue(Query(call.Arguments[0].String()))
 	}
-	answer := func(call goja.FunctionCall) goja.Value {
+	best := func(call goja.FunctionCall) goja.Value {
 		answer := call.Arguments[0]
 		gj.Answer = answer
+		cost := call.Arguments[1]
+		gj.Cost = cost
 		return answer
 	}
 	err = console.Set("log", consoleLog)
@@ -51,7 +54,7 @@ func NewGOJA() *GOJA {
 	if err != nil {
 		panic(err)
 	}
-	err = llama.Set("answer", answer)
+	err = llama.Set("best", best)
 	if err != nil {
 		panic(err)
 	}

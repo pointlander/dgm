@@ -54,14 +54,20 @@ func main() {
 		begin = "```javascript"
 		end   = "```"
 	)
-	result, i := Query(`Improve the following integer factoring code, place all code in a single code block: 
+	result, i := Query(`Use the following fitness function for optimization to zero, place all code in a single code block: 
 	`+begin+`
-	while (var i := 1; i < 15; i++) {
-		if (15%i) {
-			llama.answer(i);
-			break
+	var bestSolution = 1;
+	var bestFitness = 12345;
+	function fitness(solution) {
+		var fitness = 12345 % solution;
+		if (fitness < bestFitness) {
+			bestSolution = solution;
+			bestFitness = fitness;
+			llama.best(solution, fitness);
 		}
-	}`+end+`
+		return fitness;
+	}
+`+end+`
 `), 0
 	for {
 		previous := ""
@@ -89,10 +95,22 @@ func main() {
 			i++
 			fmt.Println("```")
 			result = result[index+len(end):]
-			fmt.Println(goja.Answer)
+			fmt.Println("best", goja.Answer, goja.Cost)
 		}
 		previous = js
-		result, i = Query(`Improve the following integer factoring code, place all code in a single code block: 
-			`+begin+"\n"+js+"\n"), 0
+		result, i = Query(`Improve the following integer factoring code, use the following fitness function for optimization to zero, place all code in a single code block: 
+			`+begin+`
+				var bestSolution = 1;
+				var bestFitness = 12345;
+				function fitness(solution) {
+					var fitness = 12345 % solution;
+					if (fitness < bestFitness) {
+						bestSolution = solution;
+						bestFitness = fitness;
+						llama.best(solution, fitness);
+					}
+					return fitness;
+				}
+				`+js+"\n"), 0
 	}
 }
