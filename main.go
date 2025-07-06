@@ -54,7 +54,8 @@ func main() {
 		begin = "```javascript"
 		end   = "```"
 	)
-	result, i := Query(`Use the following fitness function for optimization to zero, place all code in a single code block: 
+	const prompt = "Use the following fitness function for optimization to zero, place all code in a single code block"
+	result, i := Query(prompt+`: 
 	`+begin+`
 	var bestSolution = 1;
 	var bestFitness = 12345;
@@ -98,7 +99,7 @@ func main() {
 			fmt.Println("best", goja.Answer, goja.Cost)
 		}
 		previous = js
-		result, i = Query(`Improve the following integer factoring code, use the following fitness function for optimization to zero, place all code in a single code block: 
+		result, i = Query(`Improve the following integer factoring code. `+prompt+`: 
 			`+begin+`
 				var bestSolution = 1;
 				var bestFitness = 12345;
